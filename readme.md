@@ -8,7 +8,7 @@
 
 <h3 align='center'>site.tree</h3>
 <p align='center'>
-  The NoteTree Application Framework
+  The TextTree Application Framework
 </p>
 
 <br/>
@@ -21,7 +21,7 @@ This will be like Next.js or Ruby on Rails, providing conventions and structures
 
 ## License
 
-Copyright 2024 <a href='https://term.surf'>TermSurf</a>
+Copyright 2024 <a href='https://clue.surf'>ClueSurf</a>
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -35,6 +35,6 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 
-## TermSurf
+## ClueSurf
 
-This is being developed by the folks at [TermSurf](https://term.surf), a California-based project for helping humanity master information and computation. Find us on [Twitter](https://twitter.com/termsurfcode), [LinkedIn](https://www.linkedin.com/company/termsurf), and [Facebook](https://www.facebook.com/termsurf). Check out our other [GitHub projects](https://github.com/termsurf) as well!
+This is being developed by the folks at [ClueSurf](https://clue.surf), a California-based project for helping humanity master information and computation. Find us on [Twitter](https://twitter.com/cluesurfcode), [LinkedIn](https://www.linkedin.com/company/cluesurf), and [Facebook](https://www.facebook.com/cluesurf). Check out our other [GitHub projects](https://github.com/cluesurf) as well!
