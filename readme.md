@@ -8,7 +8,7 @@
 
 <h3 align='center'>site.tree</h3>
 <p align='center'>
-  The TextTree Application Framework
+  The TreeCode Application Framework
 </p>
 
 <br/>
