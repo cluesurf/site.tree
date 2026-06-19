@@ -1,0 +1,31 @@
+
+# Node HTTP transport: wraps the built-in http module. `serve` creates a server whose request listener converts the
+# node request into our `request`, runs the uniform router (`handle-request`), and writes the `response` back. Same
+# router as every other backend; only the transport differs.
+
+dock load
+  load <node:http>, name http
+
+load ../http
+  find server
+  find request
+  find response
+  find handle-request
+
+task serve
+  take server, like server
+  take port, like u16
+
+  save listener
+    call http/create-server
+      bind handle
+        task on-request
+          take incoming, like request
+          like response
+          send back
+            call handle-request
+              read server
+              read incoming
+
+  call listener/listen
+    bind port, read port

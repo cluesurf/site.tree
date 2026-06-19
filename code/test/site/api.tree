@@ -1,0 +1,50 @@
+
+# A small backend API built on the http runtime: two routes (an exact path and a `:param` path). Compiled and run,
+# `handle-request` matches a request to a route and calls its handler; an unmatched path returns 404. Used by the
+# headless router test. `serve` (transport) is delegated to native per env (Rust/axum or node).
+
+load ../../http/http
+  find request
+  find response
+  find route
+  find server
+
+task make-api
+  like server
+
+  save routes
+    make list
+
+  call push
+    bind list, read routes
+    bind item
+      make route
+        bind method, text <GET>
+        bind path, text </health>
+        bind handle
+          task health
+            take request, like request
+            like response
+            send back
+              make response
+                bind status, mark 200
+                bind body, text <ok>
+
+  call push
+    bind list, read routes
+    bind item
+      make route
+        bind method, text <GET>
+        bind path, text </users/:id>
+        bind handle
+          task user
+            take request, like request
+            like response
+            send back
+              make response
+                bind status, mark 200
+                bind body, text <user>
+
+  send back
+    make server
+      bind routes, read routes

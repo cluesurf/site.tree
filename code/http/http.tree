@@ -1,0 +1,151 @@
+
+# The backend HTTP runtime: the platform-agnostic server API plus the uniform router (path matching + dispatch).
+# The matcher and dispatch are ours (identical on every backend); the transport (`serve`) delegates to native per
+# env -- Rust (axum) is the primary target, node a second. See book/site/routes.md and project_dock_hybrid_substrate.
+
+load @cluesurf/base/code/list
+  find list
+
+load @cluesurf/base/code/text
+  find text
+
+form request
+  link method, like text
+  link path, like text
+  link body, like text
+
+form response
+  link status, like u16
+  link body, like text
+
+form route
+  link method, like text
+  link path, like text
+  link handle
+    like task
+      take request, like request
+      like response
+
+form server
+  link routes, like list
+
+# does a pattern segment match a url segment? a `:param` segment matches anything
+task segment-matches
+  take pattern, like text
+  take value, like text
+  like boolean
+  fork test
+    hook test
+      call starts-with
+        read pattern
+        text <:>
+    hook hold
+      send back, wave true
+    hook miss
+      send back
+        call is-equal
+          read pattern
+          read value
+
+# do all segments from `index` onward match? (recursive, so it works on any backend without a loop builtin)
+task segments-match
+  take pattern, like list
+  take value, like list
+  take index, like u32
+  like boolean
+  fork test
+    hook test
+      call is-minimum
+        read index
+        read pattern/length
+    hook hold
+      send back, wave true
+    hook miss
+      save ok
+        call segment-matches
+          call get
+            read pattern
+            read index
+          call get
+            read value
+            read index
+      fork test
+        hook test
+          read ok
+        hook hold
+          send back
+            call segments-match
+              read pattern
+              read value
+              call add
+                read index
+                mark 1
+        hook miss
+          send back, wave false
+
+# does a route match a request? same method, same segment count, every segment matches
+task route-matches
+  take route, like route
+  take request, like request
+  like boolean
+  fork test
+    hook test
+      call is-unequal
+        read route/method
+        read request/method
+    hook hold
+      send back, wave false
+    hook miss
+      save pattern-parts
+        call split
+          read route/path
+          text </>
+      save value-parts
+        call split
+          read request/path
+          text </>
+      fork test
+        hook test
+          call is-unequal
+            read pattern-parts/length
+            read value-parts/length
+        hook hold
+          send back, wave false
+        hook miss
+          send back
+            call segments-match
+              read pattern-parts
+              read value-parts
+              mark 0
+
+# find the first matching route and call its handler; 404 when nothing matches. This is the heart of the router and
+# is identical on every backend.
+task handle-request
+  take server, like server
+  take request, like request
+  like response
+  save found
+    call find
+      read server/routes
+      task test
+        take route, like route
+        like boolean
+        send back
+          call route-matches
+            read route
+            read request
+  fork case, read found
+    case some
+      send back
+        call found/value/handle
+          read request
+    case none
+      send back
+        make response
+          bind status, mark 404
+          bind body, text <not found>
+
+# start serving: delegates to the native transport, which calls `handle-request` per incoming request
+task serve
+  take server, like server
+  take port, like u16
