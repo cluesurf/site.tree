@@ -8,7 +8,7 @@ load @cluesurf/base/code/list
   find list
 
 load ../dom/dom
-  find node
+  find view
   find create-element
   find create-text
   find set-text
@@ -22,20 +22,20 @@ load ./reactive
 
 task element
   take tag, like text
-  like node
+  like view
   send back
     call create-element
       bind tag, read tag
 
 task text
   take value, like text
-  like node
+  like view
   send back
     call create-text
       bind value, read value
 
 task attribute
-  take node, like node
+  take node, like view
   take name, like text
   take value, like text
   call set-attribute
@@ -44,7 +44,7 @@ task attribute
     bind value, read value
 
 task event
-  take node, like node
+  take node, like view
   take name, like text
   take handler
     like task
@@ -58,7 +58,7 @@ task dynamic
   take source
     like task
       like text
-  like node
+  like view
   save host
     call create-text
       bind value, text <>
@@ -74,16 +74,16 @@ task dynamic
 # swap a subtree on a reactive condition. An effect re-evaluates `when` and mounts `then` or `other`, replacing the
 # node mounted last time. Reads inside `when` subscribe the effect, so the branch updates when state changes.
 task show
-  take host, like node
+  take host, like view
   take when
     like task
       like boolean
   take then
     like task
-      like node
+      like view
   take other
     like task
-      like node
+      like view
   save current
     call create-text
       bind value, text <>
@@ -109,12 +109,12 @@ task show
 # render each item of a list under a host, calling `build` per item
 task each
   head t
-  take host, like node
+  take host, like view
   take items, like list
   take build
     like task
       take item, like t
-      like node
+      like view
   walk list, read items
     hook next
       take site, name item
@@ -126,10 +126,10 @@ task each
 
 # attach a built child under a host
 task mount
-  take host, like node
+  take host, like view
   take build
     like task
-      like node
+      like view
   call append
     bind parent, read host
     bind child

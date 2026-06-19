@@ -16,10 +16,10 @@ load ../../zone/reactive
   find write-signal
 
 load ../../dom/dom
-  find node
+  find view
 
 task counter
-  take host, like node
+  take host, like view
 
   save count
     call make-signal

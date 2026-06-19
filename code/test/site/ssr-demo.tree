@@ -10,10 +10,10 @@ load ../../zone/reactive
   find read-signal
   find write-signal
 load ../../dom/dom
-  find node
+  find view
 
 task build-counter
-  take host, like node
+  take host, like view
   like signal
   save count
     call make-signal
@@ -22,7 +22,7 @@ task build-counter
     bind host, read host
     bind build
       task build
-        like node
+        like view
         send back
           call dynamic
             bind source

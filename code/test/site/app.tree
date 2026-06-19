@@ -14,10 +14,10 @@ load ../../zone/reactive
   find read-signal
   find write-signal
 load ../../dom/dom
-  find node
+  find view
 
 task mount-app
-  take host, like node
+  take host, like view
 
   save label
     call make-signal
@@ -65,5 +65,5 @@ task mount-app
     bind host, read host
     bind build
       task build
-        like node
+        like view
         send back, read root

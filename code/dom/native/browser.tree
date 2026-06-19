@@ -1,61 +1,93 @@
 
-# Browser DOM: the native host implementation, wrapping the real document via dock. Each task conforms to the
-# platform-agnostic dom API in ../../dom.
+# Browser DOM: the native host implementation, delegating to the real DOM through @cluesurf/bind. Each task conforms
+# to the platform-agnostic dom API in ../../dom. The abstract `view` handle is opaque (an erased host node), so each
+# task re-types it to the bind form that owns the method it needs (document / element / node / child-node), then calls
+# the method with member syntax (`call made/set-attribute / ...`). bind's methods are JS-`this`-style (the receiver is
+# implicit), so the receiver is the member target and the args are exactly the method's params. The emitter lowers the
+# call to `made.setAttribute(...)`; the delegation to native lives inside bind, whose tasks carry the foreign JS name.
 
-dock load
-  load <dom>, name dom
+load @cluesurf/bind/code/browser/dom/document
+  find document
 
-load ../dom
+load @cluesurf/bind/code/browser/dom/element
+  find element
+
+load @cluesurf/bind/code/browser/dom/node
   find node
+
+load @cluesurf/bind/code/browser/dom/child-node
+  find child-node
+
+load @cluesurf/base/code/maybe
+  find maybe
+
+load ../../dom/dom
+  find view
+
+# the global `document`, typed as bind's document form so its methods resolve
+host document, name <document>
+  like document
 
 task create-element
   take tag, like text
-  like node
+  like view
+  host made, like element
+    call document/create-element
+      read tag
+      make none
   send back
-    make node
-      bind handle
-        call dom/create-element
-          bind tag, read tag
+    make view
+      bind handle, read made
 
 task create-text
   take value, like text
-  like node
+  like view
+  host made, like text
+    call document/create-text-node
+      read value
   send back
-    make node
-      bind handle
-        call dom/create-text-node
-          bind value, read value
+    make view
+      bind handle, read made
 
 task set-text
-  take node, like node
+  take node, like view
   take value, like text
   save node/handle/text-content, read value
 
 task set-attribute
-  take node, like node
+  take node, like view
   take name, like text
   take value, like text
-  call node/handle/set-attribute
-    bind name, read name
-    bind value, read value
+  host made, like element
+    read node/handle
+  call made/set-attribute
+    read name
+    read value
 
 task listen
-  take node, like node
+  take node, like view
   take event, like text
   take handler
     like task
-  call node/handle/add-event-listener
-    bind event, read event
-    bind handler, read handler
+  host made, like element
+    read node/handle
+  call made/add-event-listener
+    read event
+    read handler
+    make none
 
 task append
-  take parent, like node
-  take child, like node
-  call parent/handle/append-child
-    bind child, read child/handle
+  take parent, like view
+  take child, like view
+  host made, like node
+    read parent/handle
+  call made/append-child
+    read child/handle
 
 task replace
-  take old, like node
-  take new, like node
-  call old/handle/replace-with
-    bind node, read new/handle
+  take old, like view
+  take new, like view
+  host made, like child-node
+    read old/handle
+  call made/replace-with
+    read new/handle

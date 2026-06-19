@@ -1,8 +1,8 @@
-// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-web-9fiJjI/dom.ts
+// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-web-s7Atrc/dom.ts
 var createElement = (tag) => document.createElement(tag);
 var createTextNode = (value) => document.createTextNode(value);
 
-// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-web-9fiJjI/app.ts
+// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-web-s7Atrc/app.ts
 function listIsEmpty(self) {
   return self.length == 0;
 }
@@ -65,12 +65,6 @@ function track(signal) {
     listPush(signal.observers, current);
   }
 }
-function element(tag) {
-  return createElement2(tag);
-}
-function text(value) {
-  return createText(value);
-}
 function event(node, name, handler) {
   listen(node, name, handler);
 }
@@ -86,16 +80,16 @@ function mount(host, build) {
 }
 function mountApp(host) {
   const label = makeSignal("ready");
-  const root = element("div");
-  const button = element("button");
+  const root = createElement2("div");
+  const button = createElement2("button");
   event(button, "click", () => {
     writeSignal(label, "clicked");
   });
-  append(button, text("click me"));
+  append(button, createText("click me"));
   append(root, button);
   append(root, dynamic(() => readSignal(label)));
   mount(host, () => root);
 }
 
-// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-web-9fiJjI/entry.ts
+// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-web-s7Atrc/entry.ts
 mountApp({ handle: document.body });

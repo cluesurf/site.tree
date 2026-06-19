@@ -1,83 +1,215 @@
 
-# Server DOM: the native host implementation for server-side rendering. A node is an in-memory element record; the
-# tree serializes to an HTML string. Events are inert on the server (no listeners fire). Conforms to ../../dom.
+# In-memory DOM: the native host implementation for server-side rendering and headless testing. A node is a real
+# element record (tag, text, attributes, styles, classes, children, listeners, parent), so the full DOM API works
+# without a browser: build a tree, mutate it, fire stored listeners, remove and replace nodes. Conforms to ../../dom.
 
 load @cluesurf/base/code/list
   find list
 
-load ../dom
-  find node
+load @cluesurf/base/code/maybe
+  find maybe
 
-# the in-memory shape behind a server node
+load ../dom
+  find view
+
 form element-data
   link tag, like text
   link text, like text
   link attributes, like list
+  link styles, like list
+  link classes, like list
   link children, like list
+  link listeners, like list
+  link parent, like maybe
 
-form attribute-pair
+form pair
   link name, like text
   link value, like text
 
+form listener
+  link event, like text
+  link handle
+    like task
+
 task create-element
   take tag, like text
-  like node
+  like view
   send back
-    make node
+    make view
       bind handle
         make element-data
           bind tag, read tag
           bind text, text <>
           bind attributes
             make list
+          bind styles
+            make list
+          bind classes
+            make list
           bind children
             make list
+          bind listeners
+            make list
+          bind parent
+            make none
 
 task create-text
   take value, like text
-  like node
+  like view
   send back
-    make node
+    make view
       bind handle
         make element-data
           bind tag, text <>
           bind text, read value
           bind attributes
             make list
+          bind styles
+            make list
+          bind classes
+            make list
           bind children
             make list
+          bind listeners
+            make list
+          bind parent
+            make none
 
 task set-text
-  take node, like node
+  take node, like view
   take value, like text
   save node/handle/text, read value
 
 task set-attribute
-  take node, like node
+  take node, like view
   take name, like text
   take value, like text
+  save kept
+    call filter
+      read node/handle/attributes
+      task keep
+        take entry, like pair
+        like boolean
+        send back
+          call is-unequal
+            read entry/name
+            read name
+  save node/handle/attributes, read kept
   call push
     bind list, read node/handle/attributes
     bind item
-      make attribute-pair
+      make pair
         bind name, read name
         bind value, read value
 
-# the server never fires listeners, so binding one is a no-op
+task get-attribute
+  take node, like view
+  take name, like text
+  like text
+  save found
+    call find
+      read node/handle/attributes
+      task match
+        take entry, like pair
+        like boolean
+        send back
+          call is-equal
+            read entry/name
+            read name
+  fork case, read found
+    case some
+      send back, read found/value/value
+    case none
+      send back, text <>
+
+task set-style
+  take node, like view
+  take property, like text
+  take value, like text
+  call push
+    bind list, read node/handle/styles
+    bind item
+      make pair
+        bind name, read property
+        bind value, read value
+
+task add-class
+  take node, like view
+  take name, like text
+  call push
+    bind list, read node/handle/classes
+    bind item, read name
+
+task remove-class
+  take node, like view
+  take name, like text
+  save kept
+    call filter
+      read node/handle/classes
+      task keep
+        take entry, like text
+        like boolean
+        send back
+          call is-unequal
+            read entry
+            read name
+  save node/handle/classes, read kept
+
+task set-property
+  take node, like view
+  take name, like text
+  take value, like text
+  call set-attribute
+    read node
+    read name
+    read value
+
 task listen
-  take node, like node
+  take node, like view
   take event, like text
   take handler
     like task
+  call push
+    bind list, read node/handle/listeners
+    bind item
+      make listener
+        bind event, read event
+        bind handle, read handler
 
 task append
-  take parent, like node
-  take child, like node
+  take parent, like view
+  take child, like view
   call push
     bind list, read parent/handle/children
     bind item, read child
+  save child/handle/parent
+    make some
+      bind value, read parent
+
+task remove
+  take node, like view
+  fork case, read node/handle/parent
+    case some
+      save kept
+        call filter
+          read node/handle/parent/value/handle/children
+          task keep
+            take entry, like view
+            like boolean
+            send back
+              call is-unequal
+                read entry
+                read node
+      save node/handle/parent/value/handle/children, read kept
+    case none
+      send back
 
 task replace
-  take old, like node
-  take new, like node
+  take old, like view
+  take new, like view
   save old/handle, read new/handle
+
+task child-count
+  take node, like view
+  like number
+  send back, read node/handle/children/length
