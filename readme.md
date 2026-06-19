@@ -8,7 +8,7 @@
 
 <h3 align='center'>site.tree</h3>
 <p align='center'>
-  The TermTree Application Framework
+  The Seed Application Framework
 </p>
 
 <br/>

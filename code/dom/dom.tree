@@ -1,0 +1,38 @@
+
+# DOM: the host-tree abstraction the render runtime targets. This is the platform-agnostic public API. The native
+# impls under native/ wrap the real browser DOM or build a server string, delegated via dock. The render runtime
+# never touches a host primitive directly, only this API, so it is identical on every backend.
+
+form node
+  link handle, mark private
+
+task create-element
+  take tag, like text
+  like node
+
+task create-text
+  take value, like text
+  like node
+
+task set-text
+  take node, like node
+  take value, like text
+
+task set-attribute
+  take node, like node
+  take name, like text
+  take value, like text
+
+task listen
+  take node, like node
+  take event, like text
+  take handler
+    like task
+
+task append
+  take parent, like node
+  take child, like node
+
+task replace
+  take old, like node
+  take new, like node

@@ -1,0 +1,95 @@
+
+# Reactive runtime: signals and effects, the Solid model (run-once setup, no virtual DOM). A signal holds a value
+# and its observers. Reading a signal inside an effect subscribes that effect; writing re-runs the subscribers. The
+# render runtime builds on these to keep the host tree in sync with state.
+
+load @cluesurf/base/code/list
+  find list
+
+form signal
+  head t
+  link value, like t
+  link observers, like list
+
+form effect
+  link run
+    like task
+
+# the effect currently running, so a signal read can subscribe it (a stack, to support nested effects)
+host running
+  make list
+
+task make-signal
+  head t
+  take value, like t
+  like signal
+  send back
+    make signal
+      bind value, read value
+      bind observers
+        make list
+
+task read-signal
+  head t
+  take self, like signal
+  like t
+  call track
+    bind signal, read self
+  send back, read self/value
+
+task write-signal
+  head t
+  take self, flex true
+  take value, like t
+  save self/value, read value
+  # snapshot the observers and clear them, so effects re-subscribe fresh when they re-run (no growth mid-iteration)
+  save subscribers, read self/observers
+  save self/observers
+    make list
+  walk list, read subscribers
+    hook next
+      take site, name observer
+      call run-effect
+        bind effect, read observer
+
+task make-effect
+  take run
+    like task
+  like effect
+  save own
+    make effect
+      bind run, read run
+  call run-effect
+    bind effect, read own
+  send back, read own
+
+# push the effect, run it (so its reads subscribe), then pop
+task run-effect
+  take effect, flex true
+  call push
+    bind list, read running
+    bind item, read effect
+  call effect/run
+  call pop
+    bind list, read running
+
+# subscribe the currently-running effect to a signal, if any effect is running (the top of the stack)
+task track
+  take signal, flex true
+  fork test
+    hook test
+      call is-empty, read running
+    hook hold
+      save skip, mark 0
+    hook miss
+      save index
+        call subtract
+          read running/length
+          mark 1
+      save current
+        call get
+          bind self, read running
+          bind index, read index
+      call push
+        bind list, read signal/observers
+        bind item, read current

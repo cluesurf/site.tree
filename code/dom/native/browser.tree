@@ -1,0 +1,61 @@
+
+# Browser DOM: the native host implementation, wrapping the real document via dock. Each task conforms to the
+# platform-agnostic dom API in ../../dom.
+
+dock load
+  load <dom>, name dom
+
+load ../dom
+  find node
+
+task create-element
+  take tag, like text
+  like node
+  send back
+    make node
+      bind handle
+        call dom/create-element
+          bind tag, read tag
+
+task create-text
+  take value, like text
+  like node
+  send back
+    make node
+      bind handle
+        call dom/create-text-node
+          bind value, read value
+
+task set-text
+  take node, like node
+  take value, like text
+  save node/handle/text-content, read value
+
+task set-attribute
+  take node, like node
+  take name, like text
+  take value, like text
+  call node/handle/set-attribute
+    bind name, read name
+    bind value, read value
+
+task listen
+  take node, like node
+  take event, like text
+  take handler
+    like task
+  call node/handle/add-event-listener
+    bind event, read event
+    bind handler, read handler
+
+task append
+  take parent, like node
+  take child, like node
+  call parent/handle/append-child
+    bind child, read child/handle
+
+task replace
+  take old, like node
+  take new, like node
+  call old/handle/replace-with
+    bind node, read new/handle

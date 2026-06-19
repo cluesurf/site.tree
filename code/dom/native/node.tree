@@ -1,0 +1,83 @@
+
+# Server DOM: the native host implementation for server-side rendering. A node is an in-memory element record; the
+# tree serializes to an HTML string. Events are inert on the server (no listeners fire). Conforms to ../../dom.
+
+load @cluesurf/base/code/list
+  find list
+
+load ../dom
+  find node
+
+# the in-memory shape behind a server node
+form element-data
+  link tag, like text
+  link text, like text
+  link attributes, like list
+  link children, like list
+
+form attribute-pair
+  link name, like text
+  link value, like text
+
+task create-element
+  take tag, like text
+  like node
+  send back
+    make node
+      bind handle
+        make element-data
+          bind tag, read tag
+          bind text, text <>
+          bind attributes
+            make list
+          bind children
+            make list
+
+task create-text
+  take value, like text
+  like node
+  send back
+    make node
+      bind handle
+        make element-data
+          bind tag, text <>
+          bind text, read value
+          bind attributes
+            make list
+          bind children
+            make list
+
+task set-text
+  take node, like node
+  take value, like text
+  save node/handle/text, read value
+
+task set-attribute
+  take node, like node
+  take name, like text
+  take value, like text
+  call push
+    bind list, read node/handle/attributes
+    bind item
+      make attribute-pair
+        bind name, read name
+        bind value, read value
+
+# the server never fires listeners, so binding one is a no-op
+task listen
+  take node, like node
+  take event, like text
+  take handler
+    like task
+
+task append
+  take parent, like node
+  take child, like node
+  call push
+    bind list, read parent/handle/children
+    bind item, read child
+
+task replace
+  take old, like node
+  take new, like node
+  save old/handle, read new/handle
