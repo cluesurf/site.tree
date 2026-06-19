@@ -6,8 +6,8 @@
 # implicit), so the receiver is the member target and the args are exactly the method's params. The emitter lowers the
 # call to `made.setAttribute(...)`; the delegation to native lives inside bind, whose tasks carry the foreign JS name.
 
-load @cluesurf/bind/code/browser/dom/document
-  find document
+load ./global
+  find page
 
 load @cluesurf/bind/code/browser/dom/element
   find element
@@ -24,15 +24,12 @@ load @cluesurf/base/code/maybe
 load ../../dom/dom
   find view
 
-# the global `document`, typed as bind's document form so its methods resolve
-host document, name <document>
-  like document
-
 task create-element
   take tag, like text
   like view
-  host made, like element
-    call document/create-element
+  # the result is bind's html-element; it is stored in the opaque handle, so no re-type is needed here
+  host made
+    call page/create-element
       read tag
       make none
   send back
@@ -42,8 +39,8 @@ task create-element
 task create-text
   take value, like text
   like view
-  host made, like text
-    call document/create-text-node
+  host made
+    call page/create-text-node
       read value
   send back
     make view
@@ -67,8 +64,9 @@ task set-attribute
 task listen
   take node, like view
   take event, like text
+  # the handler is passed straight to addEventListener (a real function at runtime); kept gradual so it bridges to
+  # bind's EventListener union param without a structural match
   take handler
-    like task
   host made, like element
     read node/handle
   call made/add-event-listener

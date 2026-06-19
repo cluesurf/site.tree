@@ -1,8 +1,4 @@
-// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-web-s7Atrc/dom.ts
-var createElement = (tag) => document.createElement(tag);
-var createTextNode = (value) => document.createTextNode(value);
-
-// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-web-s7Atrc/app.ts
+// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-web-qgPRi1/app.ts
 function listIsEmpty(self) {
   return self.length == 0;
 }
@@ -15,20 +11,25 @@ function listPop(self) {
 function listGet(self, index) {
   return self.at(index);
 }
-function createElement2(tag) {
-  return { handle: createElement(tag) };
+var page = document;
+function createElement(tag) {
+  const made = page.createElement(tag, { form: "none" });
+  return { handle: made };
 }
 function createText(value) {
-  return { handle: createTextNode(value) };
+  const made = page.createTextNode(value);
+  return { handle: made };
 }
 function setText(node, value) {
   node.handle.textContent = value;
 }
 function listen(node, event2, handler) {
-  node.handle.addEventListener(event2, handler);
+  const made = node.handle;
+  made.addEventListener(event2, handler, { form: "none" });
 }
 function append(parent, child) {
-  parent.handle.appendChild(child.handle);
+  const made = parent.handle;
+  made.appendChild(child.handle);
 }
 var running = [];
 function makeSignal(value) {
@@ -80,8 +81,8 @@ function mount(host, build) {
 }
 function mountApp(host) {
   const label = makeSignal("ready");
-  const root = createElement2("div");
-  const button = createElement2("button");
+  const root = createElement("div");
+  const button = createElement("button");
   event(button, "click", () => {
     writeSignal(label, "clicked");
   });
@@ -91,5 +92,5 @@ function mountApp(host) {
   mount(host, () => root);
 }
 
-// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-web-s7Atrc/entry.ts
+// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-web-qgPRi1/entry.ts
 mountApp({ handle: document.body });
