@@ -16,6 +16,11 @@ load ../dom/native/dom
   find listen
   find append
   find replace
+  find remove
+
+load @cluesurf/base/code/list
+  find list
+  find push
 
 load ./reactive
   find make-effect
@@ -106,23 +111,46 @@ task show
           bind new, read next
         save current, read next
 
-# render each item of a list under a host, calling `build` per item
+# render each item of a list under a host, calling `build` per item. `items` is a getter, read inside an effect, so
+# the list re-renders whenever a signal it reads changes. Reconciliation is simple: remove the nodes built last time,
+# then build and append the current items.
 task each
   head t
   take host, like view
-  take items, like list
+  take items
+    like task
+      like list
+        like t
   take build
     like task
       take item, like t
       like view
-  walk list, read items
-    hook next
-      take site, name item
-      call append
-        bind parent, read host
-        bind child
-          call build
-            bind item, read item
+  save mounted
+    make list
+  call make-effect
+    bind run
+      task render
+        walk list, read mounted
+          hook next
+            take site, name old
+            call remove
+              bind node, read old
+        save fresh
+          make list
+        save current, call items
+        walk list, read current
+          hook next
+            take site, name item
+            save node
+              call build
+                bind item, read item
+            call append
+              bind parent, read host
+              bind child, read node
+            call push
+              bind list, read fresh
+              bind item, read node
+        save mounted, read fresh
 
 # attach a built child under a host
 task mount

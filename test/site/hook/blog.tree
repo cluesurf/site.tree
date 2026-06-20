@@ -122,6 +122,13 @@ task build-app
     bind item
       make route
         bind method, text <GET>
+        bind path, text </>
+        bind handle, read list-handler
+  call push
+    bind list, read routes
+    bind item
+      make route
+        bind method, text <GET>
         bind path, text </posts>
         bind handle, read list-handler
   call push

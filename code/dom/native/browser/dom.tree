@@ -92,6 +92,12 @@ task replace
   call made/replace-with
     read new/handle
 
+task remove
+  take node, like view
+  host made, like child-node
+    read node/handle
+  call made/remove
+
 task get-value
   take node, like view
   like text

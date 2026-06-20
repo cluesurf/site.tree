@@ -20,7 +20,14 @@ const transport = {
       const url = new URL(context.req.url)
       const body = context.req.method === 'GET' || context.req.method === 'HEAD' ? '' : await context.req.text()
       const response = await handle({ method: context.req.method, path: url.pathname, body })
-      return context.body(response.body ?? '', (response.status ?? 200) as never)
+      const out = response.body ?? ''
+      const status = (response.status ?? 200) as never
+      // serve an HTML body with the right content-type so a browser renders it (the response carries no headers, so the
+      // shape of the body is the signal); JSON / plain text fall through to hono's default text/plain
+      const head = out.trimStart().slice(0, 14).toLowerCase()
+      if (head.startsWith('<!doctype') || head.startsWith('<html'))
+        return context.html(out, status)
+      return context.body(out, status)
     })
     let server: ReturnType<typeof honoServe> | null = null
     return {
