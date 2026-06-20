@@ -1,10 +1,11 @@
 
-# Node HTTP transport: wraps the built-in http module. `serve` creates a server whose request listener converts the
-# node request into our `request`, runs the uniform router (`handle-request`), and writes the `response` back. Same
-# router as every other backend; only the transport differs.
+# Node HTTP transport: hono (via @hono/node-server). `serve` builds a listener whose request handler converts the hono
+# request into our `request`, runs the uniform trie router (`handle-request`), and writes the `response` back. hono owns
+# the socket + request/response plumbing; the matching + dispatch stay in the platform-agnostic `handle-request`. The
+# `<global:transport>` shim wraps hono so it never appears in userland.
 
 dock load
-  load <node:http>, name http
+  load <global:transport>, name runtime
 
 load ../../http
   find server
@@ -17,7 +18,7 @@ task serve
   take port, like u16
 
   save listener
-    call http/create-server
+    call runtime/create-server
       bind handle
         task on-request
           take incoming, like request

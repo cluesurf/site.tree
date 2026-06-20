@@ -66,7 +66,10 @@ form node
   link param-name, like text
   link wildcard, like maybe
   link wildcard-name, like text
-  link handlers, like hash
+  link handlers
+    like hash
+      like text
+      like handler-data
 
 # the router: just the trie root
 form server
@@ -254,6 +257,7 @@ task find-node
   take segments, like list
   take index, like u32
   like maybe
+    like handler-data
   fork test
     hook test
       call is-minimum
@@ -391,6 +395,3 @@ task handle-request
         make response
           bind status, mark 404
           bind body, text <not found>
-
-# start serving: the transport is native-delegated and selected by the build's target env (node http, rust axum, ...)
-bear @cluesurf/site/code/http/native/serve

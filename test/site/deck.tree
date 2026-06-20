@@ -6,3 +6,11 @@ deck @cluesurf/blog
 
 load @cluesurf/site
   mark <0.0.x>
+
+# the entry `seed boot` runs (its `boot` task): the Postgres-backed HTTP API
+boot ./hook/blog
+
+back ./back
+hook ./hook
+face ./face
+book ./book
