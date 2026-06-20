@@ -87,9 +87,12 @@ task set-attribute
   take node, like view
   take name, like text
   take value, like text
+  # retype the opaque handle so `attributes` is a list and `filter` dispatches to the list method (see `remove`)
+  host self, like element
+    read node/handle
   save kept
     call filter
-      read node/handle/attributes
+      read self/attributes
       task keep
         take entry, like pair
         like boolean
@@ -97,9 +100,9 @@ task set-attribute
           call is-unequal
             read entry/name
             read name
-  save node/handle/attributes, read kept
+  save self/attributes, read kept
   call push
-    bind list, read node/handle/attributes
+    bind list, read self/attributes
     bind item
       make pair
         bind name, read name
@@ -109,9 +112,11 @@ task get-attribute
   take node, like view
   take name, like text
   like text
+  host self, like element
+    read node/handle
   save found
     call find
-      read node/handle/attributes
+      read self/attributes
       task match
         take entry, like pair
         like boolean
@@ -146,9 +151,11 @@ task add-class
 task remove-class
   take node, like view
   take name, like text
+  host self, like element
+    read node/handle
   save kept
     call filter
-      read node/handle/classes
+      read self/classes
       task keep
         take entry, like text
         like boolean
@@ -156,7 +163,7 @@ task remove-class
           call is-unequal
             read entry
             read name
-  save node/handle/classes, read kept
+  save self/classes, read kept
 
 task set-property
   take node, like view
@@ -191,11 +198,19 @@ task append
 
 task remove
   take node, like view
-  fork case, read node/handle/parent
+  # retype the opaque view handle to this impl's concrete element, so `children` reads as a list and `filter`
+  # dispatches to the list method (an opaque handle has unknown type, where method dispatch cannot resolve)
+  host self, like element
+    read node/handle
+  host edge, like maybe
+    read self/parent
+  fork case, read edge
     case some
+      host owner, like element
+        read edge/value/handle
       save kept
         call filter
-          read node/handle/parent/value/handle/children
+          read owner/children
           task keep
             take entry, like view
             like boolean
@@ -203,7 +218,7 @@ task remove
               call is-unequal
                 read entry
                 read node
-      save node/handle/parent/value/handle/children, read kept
+      save owner/children, read kept
     case none
       send back
 
