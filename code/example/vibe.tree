@@ -1,0 +1,37 @@
+
+# The vibe computer's lattice view as a Seed zone: a canvas with a graphics surface, cleared on mount. This is the
+# first code.surf visualization page in Seed, the seed of the {3,4,3,4} lattice render (currently a cleared surface;
+# the lattice draw follows). It mounts the WebGL2/WebGPU surface (via @cluesurf/site/code/graphics) into DOM chrome
+# rendered by zone. Copy of the structure that will live at mesh/site/code.surf/home/site/page/vibe/.
+
+load @cluesurf/site/code/dom/dom
+  find view
+
+load @cluesurf/site/code/graphics/graphics
+  find surface
+  find open
+  find clear
+
+# Open the surface over the canvas and clear it to the vibe background. Called on mount.
+task paint
+  take id, like text
+  save pane
+    call open
+      read id
+  call clear
+    read pane
+    mark 0
+    mark 0
+    mark 0
+    mark 1
+
+zone lattice-view
+  take host, like view
+
+  zone div
+    zone canvas
+      name screen
+
+    hook mount-start
+      call paint
+        text <lattice-canvas>

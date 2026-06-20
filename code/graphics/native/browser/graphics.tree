@@ -9,8 +9,8 @@
 load ../../../dom/native/global
   find page
 
-load @cluesurf/bind/code/browser/dom/web-gl2-rendering-context
-  find web-gl2-rendering-context
+load @cluesurf/bind/code/browser/dom/web-gl-rendering-context-base
+  find web-gl-rendering-context-base
 
 load ../../surface
   find surface
@@ -38,7 +38,7 @@ task size
   take pane, like surface
   take width, like u32
   take height, like u32
-  host gl, like web-gl2-rendering-context
+  host gl, like web-gl-rendering-context-base
     read pane/handle
   call gl/viewport
     mark 0
@@ -53,7 +53,7 @@ task clear
   take green, like f64
   take blue, like f64
   take alpha, like f64
-  host gl, like web-gl2-rendering-context
+  host gl, like web-gl-rendering-context-base
     read pane/handle
   call gl/clear-color
     read red
@@ -66,7 +66,7 @@ task clear
 # Compile a shader for the given GL stage constant. Private: make-shader maps the kind union to the constant.
 task make-stage
   mark private
-  take gl, like web-gl2-rendering-context
+  take gl, like web-gl-rendering-context-base
   take type-code
   take source, like text
   like shader
@@ -88,7 +88,7 @@ task make-shader
   take kind, like shader-kind
   take source, like text
   like shader
-  host gl, like web-gl2-rendering-context
+  host gl, like web-gl-rendering-context-base
     read pane/handle
   fork case, read kind
     case vertex
@@ -110,7 +110,7 @@ task make-program
   take vertex, like shader
   take fragment, like shader
   like program
-  host gl, like web-gl2-rendering-context
+  host gl, like web-gl-rendering-context-base
     read pane/handle
   host made
     call gl/create-program
@@ -131,7 +131,7 @@ task make-buffer
   take pane, like surface
   take data, like list
   like gpu-buffer
-  host gl, like web-gl2-rendering-context
+  host gl, like web-gl-rendering-context-base
     read pane/handle
   host made
     call gl/create-buffer
@@ -152,7 +152,7 @@ task draw
   take prog, like program
   take verts, like gpu-buffer
   take count, like u32
-  host gl, like web-gl2-rendering-context
+  host gl, like web-gl-rendering-context-base
     read pane/handle
   call gl/use-program
     read prog/handle
