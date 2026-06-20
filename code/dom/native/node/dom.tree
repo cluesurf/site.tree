@@ -9,12 +9,13 @@ load @cluesurf/base/code/list
 load @cluesurf/base/code/maybe
   find maybe
 
-load ../dom
+load ../../view
   find view
 
-form element-data
+form element
   link tag, like text
   link text, like text
+  link value, like text
   link attributes, like list
   link styles, like list
   link classes, like list
@@ -37,9 +38,10 @@ task create-element
   send back
     make view
       bind handle
-        make element-data
+        make element
           bind tag, read tag
           bind text, text <>
+          bind value, text <>
           bind attributes
             make list
           bind styles
@@ -59,9 +61,10 @@ task create-text
   send back
     make view
       bind handle
-        make element-data
+        make element
           bind tag, text <>
           bind text, read value
+          bind value, text <>
           bind attributes
             make list
           bind styles
@@ -213,3 +216,13 @@ task child-count
   take node, like view
   like number
   send back, read node/handle/children/length
+
+task get-value
+  take node, like view
+  like text
+  send back, read node/handle/value
+
+task set-value
+  take node, like view
+  take value, like text
+  save node/handle/value, read value

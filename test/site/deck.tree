@@ -1,0 +1,8 @@
+
+# The blog example: a self-contained app package that consumes the @cluesurf/site framework.
+
+deck @cluesurf/blog
+  mark <0.0.1>
+
+load @cluesurf/site
+  mark <0.0.x>

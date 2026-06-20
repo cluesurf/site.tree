@@ -1,10 +1,10 @@
 
-# DOM: the host-tree abstraction the render runtime targets. The platform-agnostic public API; native impls under
-# native/ wrap the real browser DOM or an in-memory tree (server / headless), delegated via dock. The render runtime
-# never touches a host primitive directly, only this API, so it is identical on every backend.
+# The platform-agnostic DOM API (abstract native module). The render runtime and apps import this; the build rewrites
+# it to the target platform's impl (`native/browser/dom` or `native/node/dom`) via the native-env mechanism, so the
+# caller never names a platform. The `view` handle is the opaque host-node wrapper.
 
-form view
-  link handle, mark private
+load ../view
+  find view
 
 task create-element
   take tag, like text
@@ -66,3 +66,11 @@ task replace
 task child-count
   take node, like view
   like number
+
+task get-value
+  take node, like view
+  like text
+
+task set-value
+  take node, like view
+  take value, like text

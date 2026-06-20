@@ -1,0 +1,119 @@
+
+# A minimal blog: a title input, a body textarea, an "Add post" button, and a growing list of posts. Clicking Add
+# reads the inputs, builds a post (a heading + a paragraph), appends it to the list, and clears the inputs. Everything
+# goes through the platform-agnostic dom API, so the same app runs in the browser (via @cluesurf/bind) or against the
+# in-memory server tree.
+
+load @cluesurf/site/code/zone/render
+  find element
+  find text
+  find event
+  find mount
+
+load @cluesurf/site/code/dom/native/dom
+  find view
+  find append
+  find get-value
+  find set-value
+
+task make-app
+  take host, like view
+
+  save title-input
+    call element
+      bind tag, text <input>
+
+  save body-input
+    call element
+      bind tag, text <textarea>
+
+  # the list every new post is appended to
+  save posts
+    call element
+      bind tag, text <div>
+
+  save add-button
+    call element
+      bind tag, text <button>
+  call append
+    bind parent, read add-button
+    bind child
+      call text
+        bind value, text <Add post>
+
+  call event
+    bind node, read add-button
+    bind name, text <click>
+    bind handler
+      task on-add
+        save title-text
+          call get-value
+            bind node, read title-input
+        save body-text
+          call get-value
+            bind node, read body-input
+
+        # build the post: <div><h2>title</h2><p>body</p></div>
+        save post
+          call element
+            bind tag, text <div>
+
+        save heading
+          call element
+            bind tag, text <h2>
+        call append
+          bind parent, read heading
+          bind child
+            call text
+              bind value, read title-text
+        call append
+          bind parent, read post
+          bind child, read heading
+
+        save para
+          call element
+            bind tag, text <p>
+        call append
+          bind parent, read para
+          bind child
+            call text
+              bind value, read body-text
+        call append
+          bind parent, read post
+          bind child, read para
+
+        call append
+          bind parent, read posts
+          bind child, read post
+
+        # clear the inputs for the next post
+        call set-value
+          bind node, read title-input
+          bind value, text <>
+        call set-value
+          bind node, read body-input
+          bind value, text <>
+
+  # assemble the page and mount it onto the host
+  save root
+    call element
+      bind tag, text <div>
+  call append
+    bind parent, read root
+    bind child, read title-input
+  call append
+    bind parent, read root
+    bind child, read body-input
+  call append
+    bind parent, read root
+    bind child, read add-button
+  call append
+    bind parent, read root
+    bind child, read posts
+
+  call mount
+    bind host, read host
+    bind build
+      task build
+        like view
+        send back, read root

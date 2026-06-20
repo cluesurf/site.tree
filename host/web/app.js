@@ -1,4 +1,4 @@
-// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-web-qgPRi1/app.ts
+// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-web-R3JyOt/app.ts
 function listIsEmpty(self) {
   return self.length == 0;
 }
@@ -25,7 +25,8 @@ function setText(node, value) {
 }
 function listen(node, event2, handler) {
   const made = node.handle;
-  made.addEventListener(event2, handler, { form: "none" });
+  const listener = handler;
+  made.addEventListener(event2, listener, { form: "none" });
 }
 function append(parent, child) {
   const made = parent.handle;
@@ -92,5 +93,5 @@ function mountApp(host) {
   mount(host, () => root);
 }
 
-// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-web-qgPRi1/entry.ts
+// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-web-R3JyOt/entry.ts
 mountApp({ handle: document.body });
