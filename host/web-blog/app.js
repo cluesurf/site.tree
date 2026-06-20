@@ -1,4 +1,4 @@
-// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-blog-subsEk/app.ts
+// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-blog-Z1TXmZ/app.ts
 var page = document;
 function createElement(tag) {
   const made = page.createElement(tag, { form: "none" });
@@ -57,5 +57,5 @@ function makeApp(host) {
   mount(host, () => root);
 }
 
-// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-blog-subsEk/entry.ts
+// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-blog-Z1TXmZ/entry.ts
 makeApp({ handle: document.body });

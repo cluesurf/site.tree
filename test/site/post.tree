@@ -96,7 +96,7 @@ task get-post
         read id
       wait true
   save r
-    call at
+    call get
       read rows
       mark 0
   send back

@@ -6,7 +6,7 @@
 dock load
   load <node:http>, name http
 
-load ../http
+load ../../http
   find server
   find request
   find response

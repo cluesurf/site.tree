@@ -13,7 +13,7 @@ load ../../zone/reactive
   find make-signal
   find read-signal
   find write-signal
-load ../../dom/native/dom
+load ../../dom/dom
   find view
 
 task mount-app

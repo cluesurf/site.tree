@@ -5,7 +5,7 @@
 dock load
   load <global:postgres>, name postgres
 
-load ../../db
+load ../db
   find row
 
 task connect

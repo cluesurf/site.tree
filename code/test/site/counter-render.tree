@@ -15,7 +15,7 @@ load ../../zone/reactive
   find read-signal
   find write-signal
 
-load ../../dom/native/dom
+load ../../dom/dom
   find view
 
 task counter

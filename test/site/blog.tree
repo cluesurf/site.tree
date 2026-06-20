@@ -10,7 +10,7 @@ load @cluesurf/site/code/zone/render
   find event
   find mount
 
-load @cluesurf/site/code/dom/native/dom
+load @cluesurf/site/code/dom/dom
   find view
   find append
   find get-value

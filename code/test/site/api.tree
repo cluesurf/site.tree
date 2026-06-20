@@ -1,13 +1,20 @@
 
-# A small backend API built on the http runtime: two routes (an exact path and a `:param` path). Compiled and run,
-# `handle-request` matches a request to a route and calls its handler; an unmatched path returns 404. Used by the
-# headless router test. `serve` (transport) is delegated to native per env (Rust/axum or node).
+# A small backend API on the http runtime, exercising the trie router: a static route, a `:param` route, and a `**`
+# catch-all. `handle-request` looks each request up in the trie (O(path-depth)) and calls the handler with the bound
+# params; an unmatched path returns 404. `serve` (transport) is delegated to native per env (Rust/axum or node).
 
 load ../../http/http
   find request
   find response
   find route
   find server
+  find route-server
+
+load @cluesurf/base/code/maybe
+  find unwrap-or
+
+load @cluesurf/base/code/hash
+  find get
 
 task make-api
   like server
@@ -24,6 +31,7 @@ task make-api
         bind handle
           task health
             take request, like request
+            take params, like hash
             like response
             send back
               make response
@@ -39,12 +47,39 @@ task make-api
         bind handle
           task user
             take request, like request
+            take params, like hash
             like response
             send back
               make response
                 bind status, mark 200
-                bind body, text <user>
+                bind body
+                  call unwrap-or
+                    call get
+                      read params
+                      text <id>
+                    text <none>
+
+  call push
+    bind list, read routes
+    bind item
+      make route
+        bind method, text <GET>
+        bind path, text </files/**>
+        bind handle
+          task files
+            take request, like request
+            take params, like hash
+            like response
+            send back
+              make response
+                bind status, mark 200
+                bind body
+                  call unwrap-or
+                    call get
+                      read params
+                      text <rest>
+                    text <none>
 
   send back
-    make server
-      bind routes, read routes
+    call route-server
+      read routes

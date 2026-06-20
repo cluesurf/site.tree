@@ -1,27 +1,6 @@
 
-# The platform-agnostic database API (abstract native module). Apps import this; the build rewrites it to the target's
-# impl (`native/node/db`, a Postgres-backed impl) via the native-env mechanism, so userland never names a driver. A
-# `row` is an opaque result row; `field` reads a column from it. `query` returns rows; `run` executes a statement.
+# The platform-agnostic database API. Userland imports this clean path (never a driver or a `native/...` module). It
+# re-exports the abstract native db module, which the build rewrites to the target's impl (`native/node/db`, a
+# Postgres-backed impl) via the native-env mechanism.
 
-# an opaque result row (a dynamic record from the database)
-form row
-  link handle, mark private
-
-task connect
-  take url, like text
-
-task query
-  take sql, like text
-  take params, like list
-  like list
-  mark async
-
-task run
-  take sql, like text
-  take params, like list
-  mark async
-
-task field
-  take row, like row
-  take name, like text
-  like text
+bear @cluesurf/site/code/base/native/db
