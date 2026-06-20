@@ -1,4 +1,4 @@
-// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-blog-92ieK9/app.ts
+// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-blog-kNsDl8/app.ts
 var page = document;
 function createElement(tag) {
   const made = page.createElement(tag, { form: "none" });
@@ -158,5 +158,5 @@ function blog(host) {
   append(host, view0);
 }
 
-// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-blog-92ieK9/entry.ts
+// ../../../../../../../../../private/var/folders/8x/z26qdb3x465gmtqr6z4x8hgm0000gn/T/seed-blog-kNsDl8/entry.ts
 blog({ handle: document.body });
