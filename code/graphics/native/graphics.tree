@@ -9,6 +9,7 @@ load ../surface
   find program
   find gpu-buffer
   find shader-kind
+  find primitive-kind
 
 # Acquire a drawing surface over the canvas element with the given id. WebGPU when available, else WebGL2.
 task open
@@ -24,10 +25,10 @@ task size
 # Clear the surface to a color. Each channel is 0..1.
 task clear
   take pane, like surface
-  take red, like f64
-  take green, like f64
-  take blue, like f64
-  take alpha, like f64
+  take red, like number
+  take green, like number
+  take blue, like number
+  take alpha, like number
 
 # Compile one shader stage from its source.
 task make-shader
@@ -46,12 +47,13 @@ task make-program
 # Upload vertex data to a buffer.
 task make-buffer
   take pane, like surface
-  take data, like list
+  take data
   like gpu-buffer
 
-# Draw `count` vertices from the buffer with the program.
+# Draw `count` vertices from the buffer with the program, assembled as the given primitive.
 task draw
   take pane, like surface
   take prog, like program
   take verts, like gpu-buffer
+  take kind, like primitive-kind
   take count, like u32

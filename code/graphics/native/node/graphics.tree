@@ -8,6 +8,7 @@ load ../../surface
   find program
   find gpu-buffer
   find shader-kind
+  find primitive-kind
 
 task open
   take id, like text
@@ -24,10 +25,10 @@ task size
 
 task clear
   take pane, like surface
-  take red, like f64
-  take green, like f64
-  take blue, like f64
-  take alpha, like f64
+  take red, like number
+  take green, like number
+  take blue, like number
+  take alpha, like number
 
 task make-shader
   take pane, like surface
@@ -51,7 +52,7 @@ task make-program
 
 task make-buffer
   take pane, like surface
-  take data, like list
+  take data
   like gpu-buffer
   send back
     make gpu-buffer
@@ -62,4 +63,5 @@ task draw
   take pane, like surface
   take prog, like program
   take verts, like gpu-buffer
+  take kind, like primitive-kind
   take count, like u32

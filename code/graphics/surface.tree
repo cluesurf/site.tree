@@ -19,3 +19,9 @@ form gpu-buffer
 form shader-kind
   case vertex
   case fragment
+
+# Which primitive a draw assembles its vertices into. A union, mapped to the GL constant by the native impl.
+form primitive-kind
+  case triangles
+  case lines
+  case points

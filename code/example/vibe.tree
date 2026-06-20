@@ -1,8 +1,10 @@
 
-# The vibe computer's lattice view as a Seed zone: a canvas with a graphics surface, cleared on mount. This is the
-# first code.surf visualization page in Seed, the seed of the {3,4,3,4} lattice render (currently a cleared surface;
-# the lattice draw follows). It mounts the WebGL2/WebGPU surface (via @cluesurf/site/code/graphics) into DOM chrome
-# rendered by zone. Copy of the structure that will live at mesh/site/code.surf/home/site/page/vibe/.
+# The vibe computer's lattice view as a Seed zone: a canvas with a WebGL2 surface that renders the {3,4,3,4} substrate
+# through the FULL graphics pipeline (compile shaders, upload the edge geometry, draw). This is the first code.surf
+# visualization page in Seed: it draws the 24-cell (the D4 coin of 24 directions) as its 2D F4-Coxeter shadow, 96 edges
+# with twelve-fold symmetry. The GLSL sources and the projected edge geometry come from a deterministic runtime shim
+# (<global:lattice>) so the .tree side stays clean. DOM chrome (the canvas) is rendered by zone; the render is WebGL via
+# @cluesurf/site/code/graphics. Copy of the structure for mesh/site/code.surf/home/site/page/vibe/.
 
 load @cluesurf/site/code/dom/dom
   find view
@@ -10,20 +12,55 @@ load @cluesurf/site/code/dom/dom
 load @cluesurf/site/code/graphics/graphics
   find surface
   find open
+  find size
   find clear
+  find make-shader
+  find make-program
+  find make-buffer
+  find draw
 
-# Open the surface over the canvas and clear it to the vibe background. Called on mount.
-task paint
-  take id, like text
-  save pane
-    call open
-      read id
+# the 24-cell shadow geometry + shader sources, from a deterministic native runtime shim
+dock load
+  load <global:lattice>, name grid
+
+# build the program and buffer from the shim's geometry, then draw the lattice edges into the surface
+task render
+  take pane, like surface
+  call size
+    read pane
+    mark 640
+    mark 640
   call clear
     read pane
     mark 0
     mark 0
     mark 0
     mark 1
+  save vertex
+    call make-shader
+      read pane
+      make vertex
+      read grid/vertex-source
+  save fragment
+    call make-shader
+      read pane
+      make fragment
+      read grid/fragment-source
+  save program
+    call make-program
+      read pane
+      read vertex
+      read fragment
+  save buffer
+    call make-buffer
+      read pane
+      read grid/vertices
+  call draw
+    read pane
+    read program
+    read buffer
+    make lines
+    read grid/count
 
 zone lattice-view
   take host, like view
@@ -33,5 +70,7 @@ zone lattice-view
       name screen
 
     hook mount-start
-      call paint
-        text <lattice-canvas>
+      save pane
+        call open, text <lattice-canvas>
+      call render
+        read pane
